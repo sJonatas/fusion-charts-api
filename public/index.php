@@ -1,6 +1,9 @@
 <?php require_once '../autoload.php'; ?>
+<!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8" />
+	
 		<style type="text/css">
 			body{ text-align: center; }
 			ul li a{ text-decoration: none; color: #ccc; }

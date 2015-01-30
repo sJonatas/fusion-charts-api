@@ -1,7 +1,7 @@
 <?php
 	
-$path_js 	= 'fusion-charts/'.FusionCharts_Type_ColumnLine::JS_NAME;
-$path_swf	= 'fusion-charts/'.FusionCharts_Type_ColumnLine::SWF_NAME;
+$path_js 	= '/fusion-charts/'.FusionCharts_Type_ColumnLine::JS_NAME;
+$path_swf	= '/fusion-charts/'.FusionCharts_Type_ColumnLine::SWF_NAME;
 
 $chartColumns = new FusionCharts_Type_ColumnLine($path_swf, $path_js);
 

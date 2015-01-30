@@ -1,7 +1,7 @@
 <?php
 	
-$path_js 	= 'fusion-charts/'.FusionCharts_Type_Pareto::JS_NAME;
-$path_swf	= 'fusion-charts/'.FusionCharts_Type_Pareto::SWF_PATH;
+$path_js 	= '/fusion-charts/'.FusionCharts_Type_Pareto::JS_NAME;
+$path_swf	= '/fusion-charts/'.FusionCharts_Type_Pareto::SWF_PATH;
 
 $chartPareto = new FusionCharts_Type_Pareto($path_swf, $path_js);
 

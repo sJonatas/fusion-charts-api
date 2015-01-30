@@ -22,15 +22,15 @@ abstract class FusionCharts_Chart_Abstract
 	protected $attribute = array();
 	
 	/**
-	 * @param 	string path to .swf $path_swf
-	 * @param 	string path to FusionCharts.js $path_js
+	 * @param 	string full path to .swf $path_swf
+	 * @param 	string full path to FusionCharts.js $path_js
 	 */
 	function __construct($path_swf, $path_js)
 	{
 		$this->path_swf = $path_swf;
 		$this->path_js 	= $path_js;
-		if (!file_exists($this->path_swf)) die("Arquivo swf n�o encontrado: {$this->path_swf}");
-		if (!file_exists($this->path_js	)) die("Arquivo js n�o encontrado: {$this->path_js}");
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_swf)) die("Arquivo swf não encontrado: {$this->path_swf}");
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_js	)) die("Arquivo js não encontrado: {$this->path_js}");
 	}
 	
 	/**

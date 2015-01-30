@@ -1,7 +1,7 @@
 <?php
 	
-$path_js 	= 'fusion-charts/'.FusionCharts_Type_Pie::JS_NAME;
-$path_swf	= 'fusion-charts/'.FusionCharts_Type_Pie::SWF_NAME;
+$path_js 	= '/fusion-charts/'.FusionCharts_Type_Pie::JS_NAME;
+$path_swf	= '/fusion-charts/'.FusionCharts_Type_Pie::SWF_NAME;
 
 $chartPie = new FusionCharts_Type_Pie($path_swf, $path_js);
 
