@@ -29,8 +29,8 @@ abstract class FusionCharts_Chart_Abstract
 	{
 		$this->path_swf = $path_swf;
 		$this->path_js 	= $path_js;
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_swf)) die("Arquivo swf não encontrado: {$this->path_swf}");
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_js	)) die("Arquivo js não encontrado: {$this->path_js}");
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_swf)) die("File .swf not found: {$this->path_swf}");
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_js	)) die("File .js not found: {$this->path_js}");
 	}
 	
 	/**
