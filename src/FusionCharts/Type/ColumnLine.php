@@ -1,105 +1,103 @@
 <?php
 	
 /**
- * class to create a chart MSColumn3DLineDY.swf from fusioncharts.com
+ * Classe to create chart with MSColumn3DLineDY.swf from fusioncharts.com
+ * @package FusionCharts
  * @author Lucas de Oliveira
+ * @copyright 2014 - 2015 Lucas de Oliveira
  */
-
 class FusionCharts_Type_ColumnLine extends FusionCharts_Chart_Abstract 
 {
 	const SWF_NAME = 'MSColumn3DLineDY.swf';
 	
-	private $x_desc;
-	
-	private $y_desc;
-	
+	private $xDesc;
+	private $yDesc;
 	private $columns = array();
-	
 	private $lines = array();
-	
 	private $categories = array();
-	
-	private $static_lines = array();
+	private $staticLines = array();
 	
 	/**
-	 * @param	string $x_desc
+	 * @param	string $xDesc
 	 * @return	FusionChartColumnLine
 	 */
-	public function setXdescription($x_desc)
+	public function setXdescription($xDesc)
 	{
-		$this->x_desc = $x_desc;
+		$this->xDesc = $xDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param 	string $y_desc
+	 * @param 	string $yDesc
 	 * @return	FusionChartColumnLine
 	 */
-	public function setYdescription($y_desc)
+	public function setYdescription($yDesc)
 	{
-		$this->y_desc = $y_desc;
+		$this->yDesc = $yDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param	booelan $rotate
-	 * @return	FusionChartColumnLine
+	 * @param string $name
+	 * @param array $values
+	 * @param array $attributes
+	 * @return FusionCharts_Type_ColumnLine
 	 */
-	public function setLabelRotate($rotate = true)
+	public function addColumns($name, array $values, array $attributes = null)
 	{
-		if ($rotate) $this->attribute[] = "labelDisplay='Rotate' slantLabels='1'";
-		return $this;
-	}
-	
-	/**
-	 * @param 	string 	$name
-	 * @param 	array 	$values
-	 * @param 	string	$color
-	 * @return 	FusionChartColumnLine
-	 */
-	public function addColumns($name, array $values, $color = null)
-	{
-		$column = "<dataset seriesname='".$name."' color='".$color."'>";
-		foreach ($values as $value){
-			$column .= "<set value='".$value."' />";
-		}
-		$column .= "</dataset>";
+		$defaultAttibs = array('seriesname' => $name);
+		$xmlAtribs = $this->getAsXMLAttributes($defaultAttibs) . $this->getAsXMLAttributes($attributes);
 		
-		$this->columns[] = $column;
-		return $this;
-	}
-	
-	/**
-	 * @param 	string 	$name
-	 * @param 	array 	$values
-	 * @param 	string	$color
-	 * @return 	FusionChartColumnLine
-	 */
-	public function addLine($name, array $values, $color = null)
-	{
-		$line = "<dataset seriesname='".$name."' color='".$color."' parentyaxis='S' renderas='Line'>";
-		foreach ($values as $value){
-			$line .= "<set value='".$value."' />";
-		}
-		$line .= "</dataset>";
+		$column = array();
 		
-		$this->lines[] = $line;
+		$column[] = '<dataset ' . $xmlAtribs . '>';
+		foreach ($values as $value)	$column[] = "<set value='" . $value . "' />";
+		$column[] = "</dataset>";
+		
+		$this->columns[] = implode(' ', $column);
 		return $this;
 	}
 	
 	/**
-	 * @param 	array $names
-	 * @return 	FusionChartColumnLine
+	 * @param string $name
+	 * @param array $values
+	 * @param string $color
+	 * @return FusionCharts_Type_ColumnLine
 	 */
-	public function addCategories(array $names)
+	public function addLine($name, array $values, array $attributes = null)
 	{
-		$category = "<categories>";
-		foreach ($names as $name){
-			$category .= "<category label='".$name."' />";
-		}
-		$category .= "</categories>";
+		$defaultAttibs = array(
+			'seriesname' => $name,
+			'parentyaxis' => 'S',
+			'renderas' => 'Line'
+		);
+		$xmlAtribs = $this->getAsXMLAttributes($defaultAttibs) . $this->getAsXMLAttributes($attributes);
+		
+		$line = array();
+		
+		$line[] = "<dataset " . $xmlAtribs . ">";
+		foreach ($values as $value)	$line[] = "<set value='".$value."' />";
+		$line[] = "</dataset>";
+		
+		$this->lines[] = implode(' ', $line);
+		return $this;
+	}
+	
+	/**
+	 * @param array $names
+	 * @return FusionChartColumnLine
+	 */
+	public function addCategories(array $names, array $attributes = null)
+	{
+		$xmlAtribs = $this->getAsXMLAttributes($attributes);
+		
+		$category = array();
+		
+		$category[] = "<categories " . $xmlAtribs . ">";
+		foreach ($names as $name) $category[] = "<category label='" . $name . "' />";
+		$category[] = "</categories>";
 			
-		$this->categories = $category;
+		$this->categories = implode(' ', $category);
 		return $this;
 	}
 	
@@ -109,26 +107,53 @@ class FusionCharts_Type_ColumnLine extends FusionCharts_Chart_Abstract
 	 * @param 	string 	$color
 	 * @return 	FusionChartColumnLine
 	 */
-	public function addStaticLine($name, $value, $color)
+	public function addStaticLine($name, $value, $color, array $attributes = null)
 	{
-		$this->static_lines[] = "<line startvalue='".$value."' displayvalue='".$name."' color='".$color."' valueonright='1' displayvalue='High' showontop='1' thickness='2' />";
+		$defaultAttribs = array(
+			'startvalue' => $value,
+			'displayvalue' => $name,
+			'color' => $color,
+			'valueonright' => '1',
+			'displayvalue' => 'High',
+			'showontop' => '1',
+			'thickness' => '2'
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->staticLines[] = "<line " . $xmlAttribs . " />";
 		return $this;
 	}
-		
+	
+	/**
+	 * @param booelan $rotate
+	 * @return FusionChartColumnLine
+	 */
+	public function setLabelRotate($rotate = true)
+	{
+		if ($rotate) $this->attribute[] = "labelDisplay='Rotate' slantLabels='1'";
+		return $this;
+	}
+	
 	/**
 	 * (non-PHPdoc)
 	 * @see FusionChartAbstract::getXML()
 	 */
 	public function getXML()
 	{
-		$xml_chart  = "<chart caption='{$this->name}' xaxisname='{$this->x_desc}' pyaxisname='{$this->y_desc}' animation='1' ".implode(' ', $this->attribute)." >";
-		$xml_chart .= $this->categories;
-		$xml_chart .= implode(' ', $this->columns);
-		$xml_chart .= implode(' ', $this->lines);
-		$xml_chart .= "<trendlines>".implode(' ', $this->static_lines)."</trendlines>";
-		$xml_chart .= "</chart>";
+		$mainAttribs = array(
+			'caption' => $this->name,
+			'xaxisname' => $this->xDesc,
+			'pyaxisname' => $this->yDesc,
+			'animation' => '1'
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($mainAttribs) . implode(' ', $this->attribute);
+		
+		$xmlChart  = "<chart " . $xmlAttribs . " >" .  $this->categories . implode(' ', $this->columns) . implode(' ', $this->lines);
+		$xmlChart .= "<trendlines>".implode(' ', $this->staticLines)."</trendlines>";
+		$xmlChart .= "</chart>";
 	
-		return $xml_chart;
-	}
-	
+		return $xmlChart;
+	}	
 }

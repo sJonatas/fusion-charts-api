@@ -1,22 +1,22 @@
 <?php
 
-$path_js 	= '/fusion-charts/'.FusionCharts_Type_ColumnLine::JS_NAME;
-$path_swf	= '/fusion-charts/'.FusionCharts_Type_ColumnLine::SWF_NAME;
+$pathJS = 'fusion-charts/FusionCharts.js';
+$pathSWF = 'fusion-charts/'.FusionCharts_Type_ColumnLine::SWF_NAME;
 
-$chartColumns = new FusionCharts_Type_ColumnLine($path_swf, $path_js);
+$chart = new FusionCharts_Type_ColumnLine($pathSWF, $pathJS);
 
 $categories = array('Jan', 'Feb', 'Mar', 'Apr');
-$values 	= array(100, 200, 150, 210);
+$values = array(100, 200, 150, 210);
 
-$chartColumns->setName('Chart Columns Example')
+$chart
+	->setName('Chart Columns Example')
 	->setWidth(800)
 	->setHeight(400)
+	->setLabelRotate(true)
 	->setXdescription('x values')
 	->setYdescription('y values')
 	->addAttribute('showyaxisvalues', '0')
 	->addCategories($categories)
 	->addColumns('Values', $values);
 
-echo $chartColumns->render();
-
-?>
+echo $chart->render();

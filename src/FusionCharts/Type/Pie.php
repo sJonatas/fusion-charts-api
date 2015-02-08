@@ -1,10 +1,11 @@
 <?php
 
 /**
- * class to create a chart Pie3D.swf from fusioncharts.com
+ * Classe to create chart with Pie3D.swf from fusioncharts.com
+ * @package FusionCharts
  * @author Lucas de Oliveira
+ * @copyright 2014 - 2015 Lucas de Oliveira
  */
- 
 class FusionCharts_Type_Pie extends FusionCharts_Chart_Abstract 
 {
 	const SWF_NAME = 'Pie3D.swf';
@@ -12,12 +13,22 @@ class FusionCharts_Type_Pie extends FusionCharts_Chart_Abstract
 	private $slices = array();
 	
 	/**
-	 * @param 	string 	$name
-	 * @param 	integer $value
+	 * @param string $name
+	 * @param string $value
+	 * @param array $attributes
+	 * @return FusionCharts_Type_Pie
 	 */
-	public function addSlice($name, $value, $color)
+	public function addSlice($name, $value, array $attributes = null)
 	{
-		$this->slices[] = "<set label='".$name."' value='".$value."' color='".$color."' />";
+		$defaultAttribs = array(
+			'label' => $name,
+			'value' => $value
+		);
+		
+		$attribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->slices[] = "<set " . $attribs . " />";
+		return $this;
 	}
 	
 	/**
@@ -26,11 +37,15 @@ class FusionCharts_Type_Pie extends FusionCharts_Chart_Abstract
 	 */
 	public function getXML()
 	{
-		$chart_xml  = "<chart caption='".$this->name."' ".implode(' ', $this->attribute)." theme='fint'>";
-		$chart_xml .= implode(' ', $this->slices);
-		$chart_xml .= "</chart>";
+		$mainAttribs = array(
+			'caption' => $this->name,
+			'theme' => 'fint'
+		);
 		
-		return $chart_xml;
+		$xmlAttribs = $this->getAsXMLAttributes($mainAttribs) . implode(' ', $this->attribute);
+		
+		$xmlChart = "<chart " . $xmlAttribs . " >" . implode(' ', $this->slices) . "</chart>";
+		
+		return $xmlChart;
 	}
-	
 }

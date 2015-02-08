@@ -1,48 +1,43 @@
 <?php
 
 /**
- * abstract class to chart classes
- * @author	Lucas de Oliveira
+ * Abstract class to create fusionchart classes
+ * @package FusionCharts
+ * @author Lucas de Oliveira
+ * @copyright 2014 - 2015 Lucas de Oliveira
  */
-
 abstract class FusionCharts_Chart_Abstract 
 {
 	const JS_NAME = 'FusionCharts.js';
 	
 	protected $name;
-	
 	protected $width;
-	
 	protected $height;
-	
-	protected $path_swf;
-	
-	protected $path_js;
-	
+	protected $pathSWF;
+	protected $pathJS;
 	protected $attribute = array();
 	
 	/**
-	 * @param 	string full path to .swf $path_swf
-	 * @param 	string full path to FusionCharts.js $path_js
+	 * @param string $pathSWF full swf file
+	 * @param string $pathJS full js file
+	 * @throws InvalidArgumentException file not found
 	 */
-	function __construct($path_swf, $path_js)
+	function __construct($pathSWF, $pathJS)
 	{
-		$this->path_swf = $path_swf;
-		$this->path_js 	= $path_js;
-		
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_swf)) {
-			die("File .swf not found: {$this->path_swf}");
+		$this->pathSWF = $pathSWF;
+		$this->pathJS = $pathJS;
+
+		if (!file_exists($_SERVER["DOCUMENT_ROOT"] . $this->validatePath($this->pathSWF))) {
+			throw new InvalidArgumentException("swf file not found: " . $this->pathSWF);
 		}
-		
-		if (!file_exists($_SERVER['DOCUMENT_ROOT'] . $this->path_js)) {
-			die("File .js not found: {$this->path_js}");
+		if (!file_exists($_SERVER["DOCUMENT_ROOT"] . $this->validatePath($this->pathJS))) {
+			throw new InvalidArgumentException("js file not found: " . $this->pathJS);
 		}
 	}
 	
 	/**
-	 * chart name
-	 * @param 	string $name
-	 * @return  FusionChartAbstract
+	 * @param string $name
+	 * @return FusionChartAbstract
 	 */
 	public function setName($name)
 	{
@@ -51,8 +46,8 @@ abstract class FusionCharts_Chart_Abstract
 	}
 	
 	/**
-	 * @param 	integer $width
-	 * @return 	FusionChartAbstract
+	 * @param integer $width
+	 * @return FusionChartAbstract
 	 */
 	public function setWidth($width)
 	{
@@ -61,8 +56,8 @@ abstract class FusionCharts_Chart_Abstract
 	}
 	
 	/**
-	 * @param 	integer $height
-	 * @return 	FusionChartAbstract
+	 * @param integer $height
+	 * @return FusionChartAbstract
 	 */
 	public function setHeight($height)
 	{
@@ -71,37 +66,63 @@ abstract class FusionCharts_Chart_Abstract
 	}
 	
 	/**
-	 * @param 	string $name
-	 * @param 	string $value
-	 * @return 	FusionChartAbstract
+	 * @param string $name
+	 * @param string $value
+	 * @return FusionChartAbstract
 	 */
 	public function addAttribute($name, $value)
 	{
-		$this->attribute[] = "{$name}='{$value}'";
+		$this->attribute[] = $name . "='" . $value . "'";
 		return $this;
 	}
 	
 	/**
-	 * @return 	string xml
+	 * @return string xml
 	 */
 	abstract public function getXML();
 	
 	/**
-	 * @return 	string javascript
+	 * @return string javascript
 	 */
 	public function render()
 	{
-		$script_js  = "<div id='".md5($this->name)."'></div>";
-		$script_js .= "<script type='text/javascript' src='".$this->path_js."'></script>";
-		$script_js .= "<script type='text/javascript'>";
-		$script_js .= "var xml = \"".$this->getXML()."\";";
-		$script_js .= "var chart = new FusionCharts('".$this->path_swf."', 'id', '".$this->width."', '".$this->height."', '0', '1');";
-		$script_js .= "chart.setXMLData(xml);";
-		$script_js .= "chart.render('".md5($this->name)."');";
-		$script_js .= "</script>";
-			
-		return $script_js;
+		$scriptJS  = "<div id='" . md5($this->name) . "'></div>";
+		$scriptJS .= "<script type='text/javascript' src='" . $this->pathJS . "'></script>";
+		$scriptJS .= "<script type='text/javascript'>";
+		$scriptJS .= "var xml = \"" . $this->getXML() . "\";";
+		$scriptJS .= "var chart = new FusionCharts('" . $this->pathSWF . "', 'id', '" . $this->width . "', '" . $this->height . "', '0', '1');";
+		$scriptJS .= "chart.setXMLData(xml);";
+		$scriptJS .= "chart.render('" . md5($this->name) . "');";
+		$scriptJS .= "</script>";
+		
+		return $scriptJS;
 	}
 	
+	/**
+	 * @param array $attributes associative array
+	 * @return strign XML
+	 */
+	protected function getAsXMLAttributes(array $attributes = null)
+	{
+		if (!$attributes) return '';
+	
+		foreach ($attributes as $key => $value) $xmlAttrbs[] = $key."='" . $value ."'";
+		
+		return implode(' ', $xmlAttrbs);
+	}
+	
+	/**
+	 * @param string $path
+	 * @return string
+	 */
+	protected function validatePath($path)
+	{
+		$path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+		$path = str_replace('\\', DIRECTORY_SEPARATOR, $path);
+		$path = ltrim($path, DIRECTORY_SEPARATOR);
+		$path = DIRECTORY_SEPARATOR . $path;
+		
+		return $path;
+	}
 }
 	

@@ -1,43 +1,61 @@
 <?php
 
 /**
- * class to create a chart Pareto3D.swf from fusioncharts.com
+ * Classe to create chart with Pareto3D.swf from fusioncharts.com
+ * @package FusionCharts
  * @author Lucas de Oliveira
+ * @copyright 2014 - 2015 Lucas de Oliveira
  */
-
 class FusionCharts_Type_Pareto extends FusionCharts_Chart_Abstract 
 {
 	const SWF_PATH = 'Pareto3D.swf';
 	
-	private $x_desc;
-	
-	private $y_desc;
-	
+	private $xDesc;
+	private $yDesc;
 	private $data = array();
 	
 	/**
-	 * @param	string $x_desc
-	 * @return	FusionChartPareto
+	 * @param string $xDesc
+	 * @return FusionCharts_Type_Pareto
 	 */
-	public function setXdescription($x_desc)
+	public function setXdescription($xDesc)
 	{
-		$this->x_desc = $x_desc;
+		$this->xDesc = $xDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param 	string $y_desc
-	 * @return	FusionChartPareto
+	 * @param string $yDesc
+	 * @return FusionCharts_Type_Pareto
 	 */
-	public function setYdescription($y_desc)
+	public function setYdescription($yDesc)
 	{
-		$this->y_desc = $y_desc;
+		$this->yDesc = $yDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param	booelan $rotate
-	 * @return	FusionChartPareto
+	 * @param string $description
+	 * @param string $value
+	 * @param array $attributes
+	 * @return FusionCharts_Type_Pareto
+	 */
+	public function addColumn($description, $value, array $attributes = null)
+	{
+		$defultAttribs = array(
+			'label' => $description,
+			'value' => $value
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($defultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->data[] = "<set " .$xmlAttribs. " />";
+		return $this;
+	}
+	
+	/**
+	 * @param booelan $rotate
+	 * @return FusionChartColumnLine
 	 */
 	public function setLabelRotate($rotate = true)
 	{
@@ -46,35 +64,23 @@ class FusionCharts_Type_Pareto extends FusionCharts_Chart_Abstract
 	}
 	
 	/**
-	 * @param 	string $name
-	 * @param 	string $value
-	 * @return	FusionChartPareto
-	 */
-	public function addAttribute($name, $value)
-	{
-		$this->attribute[] = "{$name}='{$value}'";
-		return $this;
-	}
-	
-	/**
-	 * @param	string 	$desc
-	 * @param 	integer $value
-	 */
-	public function addColumn($desc, $value, $color)
-	{
-		$this->data[] = "<set value='{$value}' color='{$color}' label='{$desc}' />";
-	}
-	
-	/**
 	 * (non-PHPdoc)
 	 * @see FusionChartAbstract::getXML()
 	 */
 	public function getXML()
 	{
-		$xml_chart  = "<chart caption='{$this->name}' xaxisname='{$this->x_desc}' pyaxisname='{$this->y_desc}' animation='1' ".implode(' ', $this->attribute)." > ";
-		$xml_chart .= implode(' ', $this->data)." </chart>";
+		$mainAttribs = array(
+			'caption' => $this->name,
+			'xaxisname' => $this->xDesc,
+			'pyaxisname' => $this->yDesc,
+			'animation' => '1'
+		);
 		
-		return $xml_chart;
+		$xmlAttribs = $this->getAsXMLAttributes($mainAttribs) .  implode(' ', $this->attribute) ;
+		
+		$xmlChart  = "<chart " . $xmlAttribs . " > " . implode(' ', $this->data) .  " </chart>";
+		
+		return $xmlChart;
 	}
 	
 }

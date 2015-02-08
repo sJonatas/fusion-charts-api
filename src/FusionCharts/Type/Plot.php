@@ -1,111 +1,163 @@
 <?php
 
 /**
- * class to create a chart Scatter.swf from fusioncharts.com
+ * Classe to create chart with Scatter.swf from fusioncharts.com
+ * @package FusionCharts
  * @author Lucas de Oliveira
+ * @copyright 2014 - 2015 Lucas de Oliveira
  */
 
 class FusionCharts_Type_Plot extends FusionCharts_Chart_Abstract 
 {
 	const SWF_NAME = 'Scatter.swf';
 	
-	private $x_desc;
-	
-	private $y_desc;
-	
+	private $xDesc;
+	private $yDesc;
 	private $labels;
-	
 	private $categories	= array();
-	
 	private $plots = array();
-	
 	private $trendlines = array();
-	
-	private $static_lines = array();
+	private $staticLines = array();
 	
 	/**
-	 * @param	string $x_desc
-	 * @return	FusionChartPlot
+	 * @param string $xDesc
+	 * @return FusionCharts_Type_Plot
 	 */
-	public function setXdescription($x_desc)
+	public function setXdescription($xDesc)
 	{
-		$this->x_desc = $x_desc;
+		$this->xDesc = $xDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param 	string $y_desc
-	 * @return 	FusionChartPlot
+	 * @param string $yDesc
+	 * @return FusionChartPlot
 	 */
-	public function setYdescription($y_desc)
+	public function setYdescription($yDesc)
 	{
-		$this->y_desc = $y_desc;
+		$this->yDesc = $yDesc;
 		return $this;
 	}
 	
 	/**
-	 * @param	booelan $rotate
-	 * @return	FusionChartPlot
+	 * @param array $values
+	 * @param array $labels
+	 * @param array $attributes
+	 * @return FusionCharts_Type_Plot
+	 */
+	public function addCategories(array $values, array $labels, array $attributes = null)
+	{
+		$this->labels = $labels;
+		$this->categories = array();
+		
+		foreach ($values as $index => $value){
+			$defaultAttribs = array(
+				'label' => $labels[$index],
+				'x' => $value,
+				'showVerticalLine' => '1'
+			);
+			
+			$xmlAttribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+			
+			$this->categories[] = "<category " . $xmlAttribs . " />";
+		}
+		
+		return $this;
+	}
+	
+   /**
+    * @param array $xValues
+    * @param array $yValues
+    * @param string $serieName
+    * @param string $color
+    * @param array $attributes
+    * @return FusionCharts_Type_Plot
+    */
+	public function addPlots(array $xValues, array $yValues, $serieName, $color, array $attributes = null)
+	{
+		$defaultAttribs = array(
+			'seriesname' => $serieName,
+			'color' => $color,
+			'anchorbordercolor' => $color,
+			'anchorradius' => '4',
+			'anchorsides' => '4',
+			'anchorbgcolor' => $color
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->plots[] = "<dataset " . $xmlAttribs . " >";
+		
+		foreach ($xValues as $index => $xValue) {
+			$tagAttribs = array(
+				'y' => $yValues[$index],
+				'x' => $xValue,
+				'hoverText' => $this->labels[$index] . ', ' . $yValues[$index]
+			);
+			
+			$this->plots[] = "<set " . $this->getAsXMLAttributes($tagAttribs) . " />";
+		}
+		
+		$this->plots[] = "</dataset>";
+		
+		return $this;
+	}
+	
+	/**
+	 * @param string $serieName
+	 * @param string $endValue
+	 * @param string $color
+	 * @param array $attributes
+	 * @return FusionCharts_Type_Plot
+	 */
+	public function addTrendLine($serieName, $endValue, $color, array $attributes = null)
+	{
+		$defaultAttribs = array(
+			'startvalue' => $serieName,
+			'endvalue' => $endValue,
+			'istrendzone' => '1',
+			'color' => $color,
+			'alpha' => '10'
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->trendlines[] = "<line " . $xmlAttribs . " />";
+		return $this;
+	}
+	
+	/**
+	 * @param string $name
+	 * @param string $value
+	 * @param string $color
+	 * @param array $attributes
+	 * @return FusionCharts_Type_Plot
+	 */
+	public function addStaticLine($name, $value, $color, array $attributes = null)
+	{
+		$defaultAttribs = array(
+			'startvalue' => $value,
+			'displayvalue' => $name,
+			'color' => $color,
+			'valueonright' => '1',
+			'displayvalue' => 'High',
+			'showontop' => '1',
+			'thickness' => '2'
+		);
+		
+		$xmlAttribs = $this->getAsXMLAttributes($defaultAttribs) . $this->getAsXMLAttributes($attributes);
+		
+		$this->staticLines[] = "<line " . $xmlAttribs . " />";
+		return $this;
+	}
+	
+	/**
+	 * @param booelan $rotate
+	 * @return FusionChartPlot
 	 */
 	public function setLabelRotate($rotate = true)
 	{
 		if ($rotate) $this->attribute[] = "labelDisplay='Rotate' slantLabels='1'";
-		return $this;
-	}
-	
-	/**
-	 * @param 	array $values
-	 * @param 	array $labels
-	 * @return 	FusionChartPlot
-	 */
-	public function addCategories(array $values, array $labels)
-	{
-		$this->labels = $labels;
-		$this->categories = array();
-		foreach ($values as $index => $value){
-			$this->categories[] = "<category label='".$labels[$index]."' x='".$value."' showVerticalLine='1' />";
-		}
-		return $this;
-	}
-	
-	/**
-	 * @param 	array  $x_values
-	 * @param 	array  $y_values
-	 * @param 	string $serie_name
-	 * @param 	string $bgcolor
-	 * @return 	FusionChartPlot
-	 */
-	public function addPlots(array $x_values, array $y_values, $serie_name, $bgcolor)
-	{
-		$this->plots[] = "<dataset seriesname='".$serie_name."' color='".$bgcolor."' anchorsides='4' anchorbordercolor='".$bgcolor."' anchorradius='4' anchorbgcolor='".$bgcolor."'>";
-		foreach ($x_values as $index => $x_value){
-			$this->plots[] = "<set y='".$y_values[$index]."' x='".$x_value."' hoverText='".$this->labels[$index].", ".$y_values[$index]."' />";
-		}
-		$this->plots[] = "</dataset>";
-		return $this;
-	}
-	
-	/**
-	 * @param 	interger $start_value
-	 * @param 	integer	 $end_value
-	 * @param 	string	 $color
-	 * @return 	FusionChartPlot
-	 */
-	public function addTrendLine($start_value, $end_value, $color)
-	{
-		$this->trendlines[] = "<line startvalue='".$start_value."' endvalue='".$end_value."' istrendzone='1' color='".$color."' alpha='10' />";
-		return $this;
-	}
-	
-	/**
-	 * @param 	string 	$name
-	 * @param 	integer $value
-	 * @param 	string 	$color
-	 * @return 	FusionChartPlot
-	 */
-	public function addStaticLine($name, $value, $color)
-	{
-		$this->static_lines[] = "<line startvalue='".$value."' displayvalue='".$name."' color='".$color."' valueonright='1' displayvalue='High' showontop='1' thickness='2' />";
 		return $this;
 	}
 	
@@ -115,12 +167,22 @@ class FusionCharts_Type_Plot extends FusionCharts_Chart_Abstract
 	 */
 	public function getXML()
 	{
-		$xml_chart 	= "<chart palette='2' caption='".$this->name."' yaxisname='".$this->y_desc."' xaxisname='".$this->x_desc."' animation='1' bgcolor='FFFFFF' showborder='0' ".implode(' ', $this->attribute).">";
-		$xml_chart .= "<categories verticallinecolor='666666'>".implode(' ', $this->categories)."</categories>";
-		$xml_chart .= implode(' ', $this->plots);
-		$xml_chart .= "<trendlines>".implode(' ', $this->static_lines)."</trendlines><vtrendlines>".implode(' ', $this->trendlines)."</vtrendlines>";
-		$xml_chart .= "</chart>"; 
+		$mainAttribs = array(
+			'palette' => '2',
+			'caption' => $this->name,
+			'yaxisname' => $this->yDesc,
+			'xaxisname' => $this->xDesc,
+			'animation' => '1',
+			'bgcolor' => 'FFFFFF',
+			'showborder' => '0'
+		);
 		
-		return $xml_chart;
+		$xmlAttribs = $this->getAsXMLAttributes($mainAttribs) . implode(' ', $this->attribute);
+		
+		$xmlChart  = "<chart " . $xmlAttribs . "> <categories verticallinecolor='666666'>" . implode(' ', $this->categories) . "</categories>" . implode(' ', $this->plots);
+		$xmlChart .= "<trendlines>" . implode(' ', $this->staticLines) . "</trendlines><vtrendlines>" . implode(' ', $this->trendlines) . "</vtrendlines>";
+		$xmlChart .= "</chart>"; 
+		
+		return $xmlChart;
 	}
 }
