@@ -8,7 +8,7 @@ It provides a base class that can generate HTML and JavaScript for rendering sev
 
 The package comes also with specialized classes that can generate the necessary XML code with the parameters for several types of charts.
 
-Currently it comes with classes for rendering charts of types column, line, plot, pie, pareto and line.
+Currently it comes with classes for rendering charts of types column, line, plot, pie and pareto.
 
 The chart classes provide a fluent interface to define any of the supported parameters like the chart data values, chart size, colors, labels, fonts, and other chart specific parameters.
 
